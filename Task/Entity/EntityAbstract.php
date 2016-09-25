@@ -5,6 +5,7 @@ namespace Task\Entity;
 
 class EntityAbstract
 {
+
     public function __construct($data = null)
     {
         if ($data) {
@@ -26,4 +27,8 @@ class EntityAbstract
         return '';
     }
 
+    public function getValues()
+    {
+        // todo получение массива значений
+    }
 }

@@ -8,6 +8,7 @@ use Task\Model\SessionLogModel as SessionLog;
 
 class UserModel extends Model
 {
+    // todo отрефакторить, сделав все через сущности
     protected function getEntity($data = null)
     {
         return new Entity($data);
@@ -16,6 +17,7 @@ class UserModel extends Model
     public function register($data)
     {
         $data['registered'] = date(MySql::SQL_DATETIME);
+        $data['password'] = md5($data['password']);
         $result = $this->create($data);
         return $result;
     }
@@ -24,7 +26,7 @@ class UserModel extends Model
     {
         $where = array(
             'login = ' => $login,
-            ' AND password = ' => $password
+            ' AND password = ' => md5($password)
         );
         $user = $this->findBy($where);
         if ($user) {
@@ -85,4 +87,6 @@ class UserModel extends Model
         }
         return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : false;
     }
+
+
 }

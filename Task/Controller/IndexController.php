@@ -10,7 +10,7 @@ class IndexController extends Controller
     public function indexAction()
     {
         $model = new UserModel();
-        if ($_SESSION['user_id']) {
+        if (isset($_SESSION['user_id'])) {
             $user = $model->find($_SESSION['user_id']);
             return $this->_view->render('index/user.twig', array('user' => $user));
         }
