@@ -10,12 +10,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Дамп структуры базы данных test-task
-DROP DATABASE IF EXISTS `test-task`;
-CREATE DATABASE IF NOT EXISTS `test-task` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `test-task`;
-
-
 -- Дамп структуры для таблица test-task.session_log
 DROP TABLE IF EXISTS `session_log`;
 CREATE TABLE IF NOT EXISTS `session_log` (
