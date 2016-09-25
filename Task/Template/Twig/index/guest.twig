@@ -1,0 +1,8 @@
+{% extends "layout.twig" %}
+{%  block body %}
+    {% if (error_message) %}
+        <span> {{ error_message }}</span>
+    {% endif %}
+    {% include 'form/login.twig' %}
+    <a href = "/register"> Зарегистрироваться </a>
+{%  endblock %}

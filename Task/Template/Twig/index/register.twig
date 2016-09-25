@@ -1,0 +1,8 @@
+{% extends "layout.twig" %}
+{%  block body %}
+    <h3> Регистрация </h3>
+    {% if (error_message) %}
+        <span> {{ error_message }}</span>
+    {% endif %}
+    {% include 'form/register.twig' %}
+{%  endblock %}
