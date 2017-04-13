@@ -1,0 +1,17 @@
+<div id="comment_{{ item.getId() }}" style="margin: 0 0 0 20px;border: 1px solid grey;">
+    <p> Автор: {{ item.getAuthorId() }} </p>
+    <p> Дата: {{ item.getCreated() }} </p>
+    <p> Комментарий: {{ item.getComment() }}</p>
+    <div id="actions">
+        {%  if item.getLevel() == 0 %}
+            <button class="expand" data-comment-id="{{ item.getId() }}">expand</button>
+        {% endif %}
+        <button class="edit" data-comment-id="{{ item.getId() }}">edit</button>
+        <button class="delete" data-comment-id="{{ item.getId() }}">delete</button>
+    </div>
+    <div id="children_{{ item.getId() }}">
+    {%  if item.children|length > 0 %}
+            {% include 'comment/list.twig' with {'comment': item.children} only %}
+    {% endif %}
+    </div>
+</div>

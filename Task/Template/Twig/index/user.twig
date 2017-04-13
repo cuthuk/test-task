@@ -3,4 +3,7 @@
     <h3> hello {{ user.login }} </h3>
 
     <a href="/logout"> Выход </a>
+    <div id="comments">
+        {% include 'comment/list.twig' %}
+    </div>
 {%  endblock %}

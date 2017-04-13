@@ -2,6 +2,7 @@
 
 namespace Task\Controller;
 
+use Task\Model\CommentModel;
 use \Task\Model\UserModel;
 use \Task\Controller\ControllerAbstract as Controller;
 
@@ -12,14 +13,23 @@ class IndexController extends Controller
         $model = new UserModel();
         if (isset($_SESSION['user_id'])) {
             $user = $model->find($_SESSION['user_id']);
-            return $this->_view->render('index/user.twig', array('user' => $user));
+            $user = $model->find($_SESSION['user_id']);
+            $comments = new CommentModel();
+            return $this->_view->render('index/user.twig', array(
+                'user' => $user,
+                'comments' => $comments->getRoot()
+            ));
         }
         if (isset($_COOKIE['token'])) {
 
             $isAuth = $model->isAuth($_COOKIE['token']);
             if ($isAuth) {
                 $user = $model->find($_SESSION['user_id']);
-                return $this->_view->render('index/user.twig', array('user' => $user));
+                $comments = new CommentModel();
+                return $this->_view->render('index/user.twig', array(
+                    'user' => $user,
+                    'comments' => $comments->getRoot()
+                ));
             }
         }
         return $this->_view->render('index/guest.twig');

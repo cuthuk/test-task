@@ -1,16 +1,5 @@
--- --------------------------------------------------------
--- Хост:                         127.0.0.1
--- Версия сервера:               5.5.40 - MySQL Community Server (GPL)
--- ОС Сервера:                   Win32
--- HeidiSQL Версия:              9.3.0.4984
--- --------------------------------------------------------
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-
--- Дамп структуры для таблица test-task.session_log
+-- Дамп структуры для таблицы test-task.session_log
 DROP TABLE IF EXISTS `session_log`;
 CREATE TABLE IF NOT EXISTS `session_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -22,10 +11,8 @@ CREATE TABLE IF NOT EXISTS `session_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Экспортируемые данные не выделены.
 
-
--- Дамп структуры для таблица test-task.users
+-- Дамп структуры для таблицы test-task.users
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -35,7 +22,20 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Экспортируемые данные не выделены.
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
+
+-- Дамп структуры для таблицы test-task.comments
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `level` int(11) NOT NULL DEFAULT 0,
+  `author_id` int(11) NOT NULL,
+  `comment` varchar(4096) NOT NULL DEFAULT '',
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated` datetime DEFAULT 0 ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+  INDEX (`lft`,`rgt`)
+  FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

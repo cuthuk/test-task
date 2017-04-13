@@ -11,6 +11,7 @@ namespace Task\Db;
 
 class MySql
 {
+    const PLACEHOLDER_PREFIX = ":";
     const SQL_DATETIME = 'Y-m-d h:i:s';
     private $_connection;
     private static $_instance;
@@ -31,7 +32,11 @@ class MySql
     private function __construct()
     {
         $dbsettings = \Task\Config::getInstance()->db;
-        $this->_connection = new \PDO("mysql:host={$dbsettings['host']};dbname={$dbsettings['db']}", $dbsettings['login'], $dbsettings['password']);
+        $this->_connection = new \PDO(
+            "mysql:host={$dbsettings['host']};dbname={$dbsettings['db']}",
+            $dbsettings['login'], $dbsettings['password'],
+            array(\PDO::ATTR_PERSISTENT => true)
+        );
         $this->_connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 

@@ -2,9 +2,9 @@
  return array(
      'db' => array(
          'host' => 'localhost',
-         'db' => 'test-task',
+         'db' => 'test_task',
          'login' => 'root',
-         'password' => ''
+         'password' => 'pass'
      ),
      'templates' => array(
          'engine' => 'Twig',

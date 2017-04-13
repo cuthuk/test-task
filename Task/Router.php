@@ -32,6 +32,11 @@ class Router
 
         foreach ($this->routes as $pattern => $route) {
             if (preg_match("~$pattern~", $uri)) {
+                // отсекаем гет параметры
+                if (($position = strpos($uri, '?')) !== FALSE)
+                {
+                    $uri = substr($uri, 0, $position);
+                }
                 // Получаем внутренний путь из внешнего согласно правилу.
                 $internalRoute = preg_replace("~$pattern~", $route, $uri);
                 // Разбиваем внутренний путь на сегменты.
