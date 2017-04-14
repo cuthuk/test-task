@@ -31,8 +31,7 @@ class CommentModel extends NestedModel
                 ' AND c.lft BETWEEN pc.lft AND pc.rgt ' => null,
             ]);
             $parent = array_shift($children);
-            $this->buildTree($children, $parent);
-            return $children;
+            return $this->buildTree($children, $parent);
         }
     }
 
@@ -42,10 +41,13 @@ class CommentModel extends NestedModel
             $val = $child->getLevel() - 1 == $parent->getLevel();
             if ($child->getLevel() - 1 == $parent->getLevel()) {
                 $parent->children[] = $child;
+            } else {
+                continue;
             }
             if (($child->getRgt() - $child->getLft()) > 1) {
                 $child->children = $this->buildTree($children, $child);
             }
         }
+        return $parent->children;
     }
 }

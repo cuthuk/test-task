@@ -21,22 +21,31 @@ class NestedAbstract extends Model
 
     public function insertChild($data, $parentId)
     {
-        $insStr = $this->getUpdateString(array_keys($data));
+        $insStr = $this->getInsertString(array_keys($data));
         $columnsStr = implode(',', array_keys($data));
-        $this->bindParams($stmt, $data);
-        $db = Db::getInstance();
 
+        $db = Db::getInstance();
+        $parentId = (int)$parentId;
         $stmt = $this->getStmt("
-            SELECT @treeRight := rgt, @level := level from {$this->_table} WHERE id=".int($parentId).";" .
-            "SELECT FROM {$this->_table} WHERE lft > @treeRight; FOR UPDATE;" .
-            "UPDATE {$this->_table} set rgt=rgt+2 WHERE rgt >= @treeRight;" .
-            "UPDATE {$this->_table} set lft=lft+2 WHERE lft > @treeRight;" .
-            "INSERT INTO {$this->_table}(lft,rgt,level,{$columnsStr}) VALUES(@treeRight+1,@treeRight+2,@level+1, {$insStr})"
+          SELECT @treeRight := rgt, @level := level from {$this->_table} WHERE id={$parentId};
+          SELECT id FROM {$this->_table} WHERE lft > @treeRight FOR UPDATE;
+        UPDATE {$this->_table} SET rgt=rgt+2 WHERE rgt >= @treeRight;
+        UPDATE {$this->_table} SET lft=lft+2 WHERE lft > @treeRight; 
+          INSERT INTO {$this->_table}(lft,rgt,level,{$columnsStr}) VALUES(@treeRight,@treeRight+1,@level+1, {$insStr});"
         );
         $db->getConnection()->beginTransaction();
+
+        /*$db->query("SELECT @treeRight := rgt, @level := level from {$this->_table} WHERE id={$parentId}; ");
+        $db->query("SELECT id FROM {$this->_table} WHERE lft > @treeRight FOR UPDATE; ");
+        $db->query("UPDATE {$this->_table} SET rgt=rgt+2 WHERE rgt >= @treeRight; ");
+        $db->query("UPDATE {$this->_table} SET lft=lft+2 WHERE lft > @treeRight; ");*/
+        $this->bindParams($stmt, $data);
         $stmt->execute($data);
+
+        $insertId = $db->getConnection()->lastInsertId();
         if ($db->getConnection()->commit()) {
-            return $this->find($db->getConnection()->lastInsertId());
+            $stmt->closeCursor();
+            return $this->find($insertId);
         } else {
             $db->getConnection()->rollBack();
             return null;
@@ -76,7 +85,11 @@ class NestedAbstract extends Model
 
     protected function bindParams( \PDOStatement &$stmt, &$params) {
         foreach ($params as $column => $value) {
-            $stmt->bindParam(Db::PLACEHOLDER_PREFIX.$column, $value);
+            if (is_string($value)) {
+                $stmt->bindValue(Db::PLACEHOLDER_PREFIX . $column, \PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(Db::PLACEHOLDER_PREFIX . $column, $value);
+            }
         }
     }
 

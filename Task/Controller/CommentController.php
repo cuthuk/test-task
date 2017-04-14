@@ -17,8 +17,13 @@ class CommentController extends Controller
                   'comment' => $_POST['comment'],
                   'author_id' => $_SESSION['user_id']
                ], $_POST['parent_id']);
-               //$this->_view->render()
+               return $this->_view->render('comment/item.twig', [
+                   'item' => $result,
+               ]);
             }
+            header('HTTP/1.1 400 bad request');
+            echo "parent_id bad";
+            die;
         }
     }
 
@@ -27,8 +32,8 @@ class CommentController extends Controller
         $parentId = $_GET['parentId'];
         $model = new CommentModel();
         $comments = $model->getChildTree($parentId);
-        return $this->_view->render('comment/list.twig', array(
+        return $this->_view->render('comment/list.twig', [
             'comments' => $comments
-        ));
+        ]);
     }
 }

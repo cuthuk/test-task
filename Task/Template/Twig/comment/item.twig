@@ -6,12 +6,13 @@
         {%  if item.getLevel() == 0 %}
             <button class="expand" data-comment-id="{{ item.getId() }}">expand</button>
         {% endif %}
+        <button class="add" data-comment-id="{{ item.getId() }}">add</button>
         <button class="edit" data-comment-id="{{ item.getId() }}">edit</button>
         <button class="delete" data-comment-id="{{ item.getId() }}">delete</button>
     </div>
     <div id="children_{{ item.getId() }}">
     {%  if item.children|length > 0 %}
-            {% include 'comment/list.twig' with {'comment': item.children} only %}
+            {% include 'comment/list.twig' with {'comments': item.children} only %}
     {% endif %}
     </div>
 </div>
