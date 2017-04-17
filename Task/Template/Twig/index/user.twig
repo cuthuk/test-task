@@ -9,7 +9,7 @@
     <div id="add-dialog-form" title="add comment" style="display:none">
         <form>
             <fieldset>
-                <input type="hidden" id="comment_parent_id" value="0">
+                <input type="hidden" id="parent_id" name="parent_id" value="0">
                 <input type="text" name="comment" id="comment" value="" class="text ui-widget-content ui-corner-all">
                 <input type="submit" value="add">
             </fieldset>
@@ -18,9 +18,9 @@
     <div id="edit-dialog-form" title="edit comment" style="display:none">
         <form>
             <fieldset>
-                <input type="hidden" id="comment_id" value="0">
+                <input type="hidden" id="id" name="id" value="0">
                 <input type="text" name="comment" id="comment" value="" class="text ui-widget-content ui-corner-all">
-                <input type="submit" value="add">
+                <input type="submit" value="edit">
             </fieldset>
         </form>
     </div>

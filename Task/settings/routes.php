@@ -5,7 +5,7 @@ return array(
     'register' => 'index/register',
     'logout' => 'index/logout',
     'comment/get-childs' => 'comment/getChilds',
-    'comment/add' => 'comment/add',
-    'comment/update' => 'comment/update',
+    'comment/add' => 'comment/create',
+    'comment/edit' => 'comment/update',
     'comment/delete' => 'comment/delete',
 );

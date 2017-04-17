@@ -2,60 +2,77 @@ $(function() {
     dialog = $("#add-dialog-form").dialog({ autoOpen: false });
     dialog.find("form").on("submit", function(e) {
         e.preventDefault();
-        $parentId = $("#comment_parent_id").val();
-        $comment = $(this).find("#comment").val();
-        $data = {comment:$comment,parent_id: $parentId};
+        $parentId = $("#parent_id").val();
+        $data = $(this).serialize();
         $.ajax({
             type: 'POST',
             url: '/comment/add',
             data: $data
         }).done(function (data) {
-            $("#children_" + $parentId).append(data)
+            $("#children_" + $parentId).append(data);
+            $("#add-dialog-form").dialog('close');
         }).fail(function (data) {
             alert(data.responseText);
         });
     });
 
-    $("button[class=expand]").on('click', function(e){
-       e.preventDefault();
-       $parentId = $(this).attr('data-comment-id');
-        $.get('comment/get-childs',
-            {parentId: $parentId},
-            function (data) {
-                $("#children_"+$parentId).html(data);
-                initButtonActions();
-            });
+    dialogEdit = $("#edit-dialog-form").dialog({ autoOpen: false });
+    dialogEdit.find("form").on("submit", function(e) {
+        e.preventDefault();
+        $commentId = $("#id").val();
+        $data = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '/comment/edit',
+            data: $data
+        }).done(function (data) {
+            $("#comment_" + $commentId).find("#message").html($comment);
+            $("#edit-dialog-form").dialog('close');
+        }).fail(function (data) {
+            alert(data.responseText);
+        });
     });
 
-    initButtonActions();
+    $("body")
+        .on('click',"button[class=expand]", function(e){
+            e.preventDefault();
+            $parentId = $(this).attr('data-comment-id');
+            $.get('comment/get-childs',
+                {parentId: $parentId},
+                function (data) {
+                    $("#children_"+$parentId).html(data);
+                });
+        })
+        .on('click', "button[class=add]", function(e){
+            e.preventDefault();
+            $("#add-dialog-form").find("form")[0].reset();
+            $parentId = $(this).attr('data-comment-id');
+            $("#parent_id").val($parentId);
+            $("#add-dialog-form").dialog('open');
+        })
+        .on('click', "button[class=edit]", function(e){
+            e.preventDefault();
+            $("#edit-dialog-form").find("form")[0].reset();
+            $commentId = $(this).attr('data-comment-id');
+            $("#edit-dialog-form").find("#id").val($commentId);
+            $message = $("#comment_" + $commentId).find("#message").html();
+            $("#edit-dialog-form").find("#comment").val($message);
+            $("#edit-dialog-form").dialog('open');
+        })
+        .on('click', "button[class=delete]", function(e){
+            e.preventDefault();
+            $id = $(this).attr('data-comment-id');
+            $data = {id: $id};
+            $.ajax({
+                type: 'POST',
+                url: '/comment/delete',
+                data: $data
+            }).done(function (data) {
+                $("#comment_" + $id).remove();
+            }).fail(function (data) {
+                alert(data.responseText);
+            });
+        })
+    ;
 
 });
-
-function initButtonActions() {
-    $("button[class=add]").on('click', function(e){
-        e.preventDefault();
-        $parentId = $(this).attr('data-comment-id');
-        $("#comment_parent_id").val($parentId);
-        $("#add-dialog-form").dialog('open');
-    });
-
-    $("button[class=edit]").on('click', function(e){
-        e.preventDefault();
-        $parentId = $(this).attr('data-comment-id');
-        $.get('comment/get-childs',
-            {parentId: $parentId},
-            function (data) {
-                $("#children_"+$parentId).html(data);
-            });
-    });
-
-    $("button[class=delete]").on('click', function(e){
-        e.preventDefault();
-        $parentId = $(this).attr('data-comment-id');
-        $.get('comment/get-childs',
-            {parentId: $parentId},
-            function (data) {
-                $("#children_"+$parentId).html(data);
-            });
-    });
-}

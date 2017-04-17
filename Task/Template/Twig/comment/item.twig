@@ -1,7 +1,10 @@
 <div id="comment_{{ item.getId() }}" style="margin: 0 0 0 20px;border: 1px solid grey;">
-    <p> Автор: {{ item.getAuthorId() }} </p>
-    <p> Дата: {{ item.getCreated() }} </p>
-    <p> Комментарий: {{ item.getComment() }}</p>
+    <label>Автор: </label>
+    <p > {{ item.getAuthorId() }} </p>
+    <label> Дата: </label>
+    <p id="timestamp">{{ item.getCreated() }} </p>
+    <label>Комментарий: </label>
+    <p id="message"> {{ item.getComment() }}</p>
     <div id="actions">
         {%  if item.getLevel() == 0 %}
             <button class="expand" data-comment-id="{{ item.getId() }}">expand</button>

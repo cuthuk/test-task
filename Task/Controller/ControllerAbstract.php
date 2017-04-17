@@ -5,6 +5,8 @@ namespace Task\Controller;
 use Task\View\ViewFactory as Factory;
 use Task\Config;
 
+
+// TODO перепилить с Request Response объектами
 class ControllerAbstract
 {
     protected $_view;

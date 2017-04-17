@@ -28,23 +28,20 @@ class NestedAbstract extends Model
         $parentId = (int)$parentId;
         $stmt = $this->getStmt("
           SELECT @treeRight := rgt, @level := level from {$this->_table} WHERE id={$parentId};
-          SELECT id FROM {$this->_table} WHERE lft > @treeRight FOR UPDATE;
+          SELECT id FROM {$this->_table} WHERE rgt >= @treeRight FOR UPDATE;
         UPDATE {$this->_table} SET rgt=rgt+2 WHERE rgt >= @treeRight;
         UPDATE {$this->_table} SET lft=lft+2 WHERE lft > @treeRight; 
-          INSERT INTO {$this->_table}(lft,rgt,level,{$columnsStr}) VALUES(@treeRight,@treeRight+1,@level+1, {$insStr});"
+          INSERT INTO {$this->_table}(lft,rgt,level,{$columnsStr}) VALUES(@treeRight,@treeRight+1,@level+1, {$insStr});
+          "
         );
         $db->getConnection()->beginTransaction();
 
-        /*$db->query("SELECT @treeRight := rgt, @level := level from {$this->_table} WHERE id={$parentId}; ");
-        $db->query("SELECT id FROM {$this->_table} WHERE lft > @treeRight FOR UPDATE; ");
-        $db->query("UPDATE {$this->_table} SET rgt=rgt+2 WHERE rgt >= @treeRight; ");
-        $db->query("UPDATE {$this->_table} SET lft=lft+2 WHERE lft > @treeRight; ");*/
         $this->bindParams($stmt, $data);
-        $stmt->execute($data);
-
+        $bool = $stmt->execute($data);
+        $stmt->closeCursor();
         $insertId = $db->getConnection()->lastInsertId();
         if ($db->getConnection()->commit()) {
-            $stmt->closeCursor();
+
             return $this->find($insertId);
         } else {
             $db->getConnection()->rollBack();
@@ -52,14 +49,41 @@ class NestedAbstract extends Model
         }
     }
 
+    public function delete($Id)
+    {
+        $db = Db::getInstance();
+        $Id = (int)$Id;
+        $stmt = $this->getStmt("
+          SELECT @treeRight := rgt, @treeLeft := lft, @width := rgt - lft + 1 level from {$this->_table} WHERE id={$Id};
+          SELECT id FROM {$this->_table} WHERE rgt >= @treeRight FOR UPDATE;
+          DELETE FROM {$this->_table} WHERE lft BETWEEN @treeLeft AND @treeRight;
+          UPDATE {$this->_table} SET rgt=rgt-@width WHERE rgt > @treeRight;
+          UPDATE {$this->_table} SET lft=lft-@width WHERE lft > @treeRight;   
+          "
+        );
+        $db->getConnection()->beginTransaction();
+        $stmt->execute();
+        $stmt->closeCursor();
+        if ($db->getConnection()->commit()) {
+            return true;
+        } else {
+            $db->getConnection()->rollBack();
+            return false;
+        }
+    }
+
     public function update($data, $where = array())
     {
-        $setStr = $this->getUpdateString(array_keys($data));
+        $setStr = $this->getUpdateString($data);
         $whereStr = $this->getWhereString(array_keys($where));
-        $statement = "UPDATE {$this->_table} {$setStr} {$whereStr}";
+        $db = Db::getInstance();
+        $statement = "
+            UPDATE {$this->_table} {$setStr} {$whereStr}
+            ";
         $stmt = $this->getStmt($statement);
-        $this->bindParams($stmt, $data);
-        return $stmt->execute(array_values($where));
+        $result = $stmt->execute(array_values($where));
+        $stmt->closeCursor();
+        return $result;
     }
     
     protected function getStmt($statement) {
@@ -67,10 +91,11 @@ class NestedAbstract extends Model
         return $db->getConnection()->prepare($statement);
     }
 
+    // TODO перенести в modelAbstract и отрефакторить работу с ним
     protected function getUpdateString($dataKeys) {
-        return count($dataKeys) ? " SET ".implode(',', array_map(function ($c){
-            return "{$c} =". Db::PLACEHOLDER_PREFIX."{$c}";
-        }, $dataKeys)) : '';
+        return count($dataKeys) ? " SET ".implode(',', array_map(function ($c, $v){
+            return "{$c} = ".$this->valueWrapper($v);
+        }, array_keys($dataKeys), $dataKeys)) : '';
     }
 
     protected function getInsertString($dataKeys) {
@@ -85,7 +110,7 @@ class NestedAbstract extends Model
 
     protected function bindParams( \PDOStatement &$stmt, &$params) {
         foreach ($params as $column => $value) {
-            if (is_string($value)) {
+            if (is_int($value)) {
                 $stmt->bindValue(Db::PLACEHOLDER_PREFIX . $column, \PDO::PARAM_INT);
             } else {
                 $stmt->bindValue(Db::PLACEHOLDER_PREFIX . $column, $value);
