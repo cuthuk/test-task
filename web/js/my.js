@@ -2,7 +2,7 @@ $(function() {
     dialog = $("#add-dialog-form").dialog({ autoOpen: false });
     dialog.find("form").on("submit", function(e) {
         e.preventDefault();
-        $parentId = $("#parent_id").val();
+        $parentId = $(this).find("#parent_id").val();
         $data = $(this).serialize();
         $.ajax({
             type: 'POST',
@@ -19,7 +19,8 @@ $(function() {
     dialogEdit = $("#edit-dialog-form").dialog({ autoOpen: false });
     dialogEdit.find("form").on("submit", function(e) {
         e.preventDefault();
-        $commentId = $("#id").val();
+        $commentId = $(this).find("#id").val();
+        $comment = $(this).find("#comment").val();
         $data = $(this).serialize();
         $.ajax({
             type: 'POST',

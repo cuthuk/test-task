@@ -40,7 +40,7 @@ class IndexController extends Controller
         $params = array();
         if (count($_POST)) {
             $model = new UserModel();
-            //валидация формы. todo вынести отсюда
+            //валидация формы. todo вынести отсюда и доделать
             if (strlen($_POST["login"]) < 6) {
                 $params["error_message"] = 'Логин должен быть не менее 6 символов';
             }

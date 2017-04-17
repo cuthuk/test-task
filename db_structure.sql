@@ -18,10 +18,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(50) NOT NULL DEFAULT '',
-  `registered` datetime DEFAULT NULL,
+  `registered` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `users`(`login`,`password`) VALUES
+('user', MD5('pass'));
 
 
 -- Дамп структуры для таблицы test-task.comments
@@ -39,3 +41,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   INDEX (`lft`,`rgt`)
   FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `comments`(`lft`,`rgt`,`level`,`comment`,`author_id`) VALUES
+(1,2,0,'comment 1', 1),
+(3,4,0,'comment 2', 1);
